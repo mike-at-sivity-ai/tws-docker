@@ -2,19 +2,6 @@
 
 ## Getting Started
 
-### Using `docker run`
-
-```bash
-docker run -d \
-  -p 6080:6080 \
-  -p 8888:8888 \
-  --ulimit nofile=10000 \
-  -e IB_ACCOUNT=your_username \
-  -e IB_PASSWORD=your_password \
-  tws:latest
-```
-
-### Using `docker compose`
 
 Create a `.env` file:
 
@@ -24,7 +11,7 @@ IB_ACCOUNT=<your IB username>
 IB_PASSWORD='<your IB password>'
 ```
 
-`compose.yml`:
+`docker-compose.yml`:
 
 ```yml
 version: '3.4'
@@ -45,6 +32,10 @@ services:
       TWOFA_TIMEOUT_ACTION: restart
       GATEWAY_OR_TWS: tws
       TZ: Pacific/Auckland
+```
+
+```bash
+docker compose up -d
 ```
 
 View at [localhost:6080](http://localhost:6080).
