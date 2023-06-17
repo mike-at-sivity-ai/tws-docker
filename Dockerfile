@@ -1,4 +1,4 @@
-FROM debian:20-bullseye
+FROM debian:bullseye
 
 ENV TZ=US/Eastern
 
