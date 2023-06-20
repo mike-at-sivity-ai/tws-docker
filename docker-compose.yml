@@ -18,4 +18,3 @@ services:
       TZ: America/Chicago
     tty: true
     stdin_open: true
-    stdout_open: true
