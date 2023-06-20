@@ -6,6 +6,7 @@ variables:
 stages:          
   - build
   - deploy
+  - cleanup
 
 build-job:       
   stage: build
@@ -15,9 +16,15 @@ build-job:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
     
-deploy-job:      
-  stage: deploy  
-  environment: production
+deploy:      
+  stage: deploy
+  before_script:
+    - chmod 400 $SSH_KEY
   script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY mike@docker-live "
+        curl -X POST https://docker.upshon.net/api/stacks/webhooks/$WEB_HOOK_KEY
+      "
+cleanup:      
+  stage: cleanup
+  script:
+    - docker image prune --force
