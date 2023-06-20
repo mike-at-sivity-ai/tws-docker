@@ -17,4 +17,4 @@ services:
       GATEWAY_OR_TWS: tws
       TZ: America/Chicago
     interactive-flag: true
-    TTY-flag: true
+    tty: true
