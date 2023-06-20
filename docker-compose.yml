@@ -6,7 +6,7 @@ services:
     container_name: tws
     restart: unless-stopped
     ports:
-      - "80:6080"
+      - "6080:6080"
       - "8888:8888"
     ulimits:
       nofile: 10000
