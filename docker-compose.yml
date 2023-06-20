@@ -16,3 +16,5 @@ services:
       TWOFA_TIMEOUT_ACTION: restart
       GATEWAY_OR_TWS: tws
       TZ: America/Chicago
+    interactive-flag: true
+    TTY-flag: true
