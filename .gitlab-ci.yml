@@ -22,7 +22,7 @@ deploy:
     - chmod 400 $SSH_KEY
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY mike@docker-live "
-        curl -X POST https://docker.upshon.net/api/stacks/webhooks/$WEB_HOOK_KEY
+        curl -X POST $WEB_HOOK
       "
 cleanup:      
   stage: cleanup
