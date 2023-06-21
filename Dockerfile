@@ -41,7 +41,7 @@ RUN mkdir -p ~/ibc && mv /opt/ibc/config.ini ~/ibc/config.ini
 
 COPY ./ibc/config.ini /root
 
-ENV TWS_SETTINGS_PATH=/root
+# ENV TWS_SETTINGS_PATH=/root
 
 RUN chmod a+x *.sh /opt/ibc/*.sh /opt/ibc/scripts/*.sh
 
