@@ -54,8 +54,11 @@ socat -d -d TCP-LISTEN:8888,fork TCP:127.0.0.1:${port} &
 # Hacky way to get the major version for IB Gateway/TWS
 TWS_MAJOR_VERSION=$(ls ~/Jts/ibgateway/.)
 
+sed -i -e "s|IbLoginId=|IbLoginId=$IB_USERNAME|g" ~/config.ini
+sed -i -e "s|IbPassword=|IbLoginId=$IB_PASSWORD|g" ~/config.ini
+
 exec /opt/ibc/scripts/ibcstart.sh "${TWS_MAJOR_VERSION}" $command \
-    "--user=${USERNAME:-}" \
-    "--pw=${PASSWORD:-}" \
+    "--user=${IB_USERNAME:-}" \
+    "--pw=${IB_PASSWORD:-}" \
     "--on2fatimeout=${TWOFA_TIMEOUT_ACTION:-restart}" \
     "--tws-settings-path=${TWS_SETTINGS_PATH:-}"
