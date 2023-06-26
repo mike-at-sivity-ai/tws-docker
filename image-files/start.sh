@@ -58,5 +58,5 @@ sed -i -e "s|IbLoginId=|IbLoginId=$IB_USERNAME|g" ~/config.ini
 sed -i -e "s|IbPassword=|IbLoginId=$IB_PASSWORD|g" ~/config.ini
 
 exec /opt/ibc/scripts/ibcstart.sh "${TWS_MAJOR_VERSION}" $command \
-    "--ibc-ini=~/config.ini" \
+    "--ibc-ini=/root/config.ini" \
     "--tws-settings-path=${TWS_SETTINGS_PATH:-}"
