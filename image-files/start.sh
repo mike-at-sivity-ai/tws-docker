@@ -17,36 +17,14 @@ Xvnc -SecurityTypes None -AlwaysShared=1 -geometry 1920x1080 :0 &
 # Start openbox
 openbox &
 
-# Start either TWS or IB Gateway
-if [[ -z ${GATEWAY_OR_TWS:-} ]]; then
-    # Start TWS by default if not specified
-    GATEWAY_OR_TWS=tws
-    command=
-elif [[ ${GATEWAY_OR_TWS@L} = "gateway" ]]; then
-    command='-g'
-elif [[ ${GATEWAY_OR_TWS@L} = "tws" ]]; then
-    command=
-else
-    printf "GATEWAY_OR_TWS must be either 'gateway' or 'tws': got '%s'\n" "$GATEWAY_OR_TWS"
-    exit 1
-fi
-
-# Forward correct port with socat
-if [[ ${GATEWAY_OR_TWS@L} = "gateway" ]]; then
-    if [[ ${IBC_TradingMode:-live} = "live" ]]; then
-        # IBGateway Live
-        port=4001
-    else
-        # IBGateway Paper
-        port=4002
-    fi
-elif [[ ${IBC_TradingMode:-live} = "live" ]]; then
+if [[ ${IBC_TradingMode:-live} = "live" ]]; then
     # TWS Live
     port=7496
 else
     # TWS Paper
     port=7497
 fi
+
 
 printf "Listening for incoming API connections on %s\n" $port
 socat -d -d TCP-LISTEN:8888,fork TCP:127.0.0.1:${port} &
@@ -57,6 +35,4 @@ TWS_MAJOR_VERSION=$(ls ~/Jts/ibgateway/.)
 sed -i -e "s|IbLoginId=username|IbLoginId=$IB_USERNAME|g" ~/config.ini
 sed -i -e "s|IbPassword=password|IbPassword=$IB_PASSWORD|g" ~/config.ini
 
-exec /opt/ibc/scripts/ibcstart.sh "${TWS_MAJOR_VERSION}" $command \
-    "--ibc-ini=/root/config.ini" \
-    "--tws-settings-path=${TWS_SETTINGS_PATH:-}"
+exec /opt/ibc/scripts/ibcstart.sh "${TWS_MAJOR_VERSION}" "--ibc-ini=/root/config.ini" 
