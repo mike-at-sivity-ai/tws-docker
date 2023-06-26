@@ -6,7 +6,7 @@ ENV TZ=US/Eastern
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt install --no-install-recommends -y \
-    ca-certificates chromium-browser git libxtst6 libgtk-3-0 nano openbox procps python3 socat tigervnc-standalone-server tzdata unzip wget2 xterm
+    ca-certificates chromium-browser git libxtst6 libgtk-3-0 nano openbox procps python3 socat tigervnc-standalone-server unzip wget2 xterm
 
 # Setup noVNC for browser VNC access
 RUN git clone --depth 1 https://github.com/novnc/noVNC.git && \
