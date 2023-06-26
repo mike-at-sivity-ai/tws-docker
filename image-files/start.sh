@@ -55,7 +55,7 @@ socat -d -d TCP-LISTEN:8888,fork TCP:127.0.0.1:${port} &
 TWS_MAJOR_VERSION=$(ls ~/Jts/ibgateway/.)
 
 sed -i -e "s|IbLoginId=username|IbLoginId=$IB_USERNAME|g" ~/config.ini
-sed -i -e "s|IbPassword=password|IbLoginId=$IB_PASSWORD|g" ~/config.ini
+sed -i -e "s|IbPassword=password|IbPassword=$IB_PASSWORD|g" ~/config.ini
 
 exec /opt/ibc/scripts/ibcstart.sh "${TWS_MAJOR_VERSION}" $command \
     "--ibc-ini=/root/config.ini" \
