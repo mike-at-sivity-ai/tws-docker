@@ -3,8 +3,7 @@ FROM debian:bullseye-slim
 ENV TZ=US/Eastern
 
 # Upgrade & Install required packages
-RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list \
-    && apt-get update && \
+RUN apt-get update && \
     apt-get upgrade -y && \
     apt install --no-install-recommends -y \
     ca-certificates firefox git libxtst6 libgtk-3-0 nano openbox procps python3 socat tigervnc-standalone-server tzdata unzip wget2 xterm
