@@ -17,7 +17,7 @@ RUN git clone --depth 1 https://github.com/novnc/noVNC.git && \
 COPY image-files/index.html /noVNC
 COPY image-files/tws.png /noVNC
 
-ENV IBC_VERSION=3.16.2
+ENV IBC_VERSION=3.18.0
 
 # Download and setup IBC
 RUN wget2 https://github.com/IbcAlpha/IBC/releases/download/${IBC_VERSION}/IBCLinux-${IBC_VERSION}.zip -O ibc.zip \
