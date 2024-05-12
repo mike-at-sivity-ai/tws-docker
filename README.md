@@ -17,7 +17,7 @@ IB_PASSWORD='<your IB password>'
 version: '3.4'
 services:
   tws:
-    build: ./tws
+    build: .
     image: tws
     container_name: tws
     restart: unless-stopped
@@ -27,8 +27,8 @@ services:
     ulimits:
       nofile: 10000
     environment:
-      USERNAME: ${IB_ACCOUNT}
-      PASSWORD: ${IB_PASSWORD}
+      IB_USERNAME: ${IB_ACCOUNT}
+      IB_PASSWORD: ${IB_PASSWORD}
       TWOFA_TIMEOUT_ACTION: restart
       GATEWAY_OR_TWS: tws
       TZ: Pacific/Auckland

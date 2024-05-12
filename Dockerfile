@@ -37,6 +37,8 @@ COPY image-files/start.sh ./
 RUN mkdir -p ~/ibc && mv /opt/ibc/config.ini ~/ibc/config.ini
 
 COPY ./ibc/config.ini /root
+COPY ./ibc/IBC.jar /opt/ibc/
+COPY ./ibc/version /opt/ibc/
 
 ENV TWS_SETTINGS_PATH=/root
 
