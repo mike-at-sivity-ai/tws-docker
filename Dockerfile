@@ -18,7 +18,7 @@ COPY image-files/index.html /noVNC
 COPY image-files/tws.png /noVNC
 
 # Download and setup IBC
-RUN wget2 https://github.com/IbcAlpha/IBC/releases/download/3.18.0-Update.1/IBCLinux-3.18.0.zip -O ibc.zip \
+RUN wget2 https://github.com/IbcAlpha/IBC/releases/download/3.21.0/IBCLinux-3.21.0.zip -O ibc.zip \
     && unzip ibc.zip -d /opt/ibc \
     && rm ibc.zip
 
@@ -37,7 +37,7 @@ COPY image-files/start.sh ./
 RUN mkdir -p ~/ibc && mv /opt/ibc/config.ini ~/ibc/config.ini
 
 COPY ./ibc/config.ini /root
-COPY ./ibc/IBC.jar /opt/ibc/
+#COPY ./ibc/IBC.jar /opt/ibc/
 COPY ./ibc/version /opt/ibc/
 
 ENV TWS_SETTINGS_PATH=/root
