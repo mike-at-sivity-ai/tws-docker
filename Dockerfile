@@ -23,7 +23,7 @@ RUN wget2 https://github.com/IbcAlpha/IBC/releases/download/3.21.0/IBCLinux-3.21
     && rm ibc.zip
 
 # Download IB Gateway (which contains TWS) stable | latest
-ENV TWS_VERSION=stable
+ENV TWS_VERSION=latest
 
 RUN wget2 https://download2.interactivebrokers.com/installers/ibgateway/${TWS_VERSION}-standalone/ibgateway-${TWS_VERSION}-standalone-linux-x64.sh -O "tws-linux-x64.sh" 
 
