@@ -6,7 +6,7 @@ ENV TZ=US/Eastern
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt install --no-install-recommends -y \
-    ca-certificates firefox-esr git libxtst6 libgtk-3-0 nano openbox procps python3 socat tigervnc-standalone-server tzdata unzip wget2 xterm
+    ca-certificates firefox-esr git libxtst6 libgtk-3-0 nano openbox procps python3 socat tigervnc-standalone-server tzdata unzip wget2 xterm 
 
 # Setup noVNC for browser VNC access
 RUN git clone --depth 1 https://github.com/novnc/noVNC.git && \
@@ -37,8 +37,6 @@ COPY image-files/start.sh ./
 RUN mkdir -p ~/ibc && mv /opt/ibc/config.ini ~/ibc/config.ini
 
 COPY ./ibc/config.ini /root
-#COPY ./ibc/IBC.jar /opt/ibc/
-#COPY ./ibc/version /opt/ibc/
 
 ENV TWS_SETTINGS_PATH=/root
 
