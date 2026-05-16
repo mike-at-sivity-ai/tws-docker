@@ -15,7 +15,7 @@ Xvnc -SecurityTypes None -AlwaysShared=1 -geometry 1920x1080 :0 &
 until [ -e /tmp/.X11-unix/X0 ]; do sleep 0.1; done
 
 # Start noVNC server
-./noVNC/utils/novnc_proxy --vnc localhost:5900 &
+./noVNC/utils/novnc_proxy --vnc localhost:5900 --listen 6081 &
 
 # Start openbox
 openbox &

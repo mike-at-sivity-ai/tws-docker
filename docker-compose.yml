@@ -5,8 +5,9 @@ services:
     container_name: tws
     restart: unless-stopped
     ports:
-      - "6080:6080"
       - "8888:8888"
+    expose:
+      - "6081"
     ulimits:
       nofile: 10000
     environment:
@@ -15,4 +16,23 @@ services:
       TZ: America/Chicago
     tty: true
     stdin_open: true
+    networks:
+      - tws_internal
 
+  nginx:
+    image: nginx:alpine
+    container_name: tws-nginx
+    restart: unless-stopped
+    ports:
+      - "6080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+    networks:
+      - tws_internal
+    depends_on:
+      - tws
+
+networks:
+  tws_internal:
+    driver: bridge
