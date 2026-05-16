@@ -11,6 +11,9 @@ rm -f /tmp/.X0-lock
 # Start VNC server
 Xvnc -SecurityTypes None -AlwaysShared=1 -geometry 1920x1080 :0 &
 
+# Wait for Xvnc to be ready (socket appears when Xvnc is listening)
+until [ -e /tmp/.X11-unix/X0 ]; do sleep 0.1; done
+
 # Start noVNC server
 ./noVNC/utils/novnc_proxy --vnc localhost:5900 &
 

@@ -18,7 +18,7 @@ COPY image-files/index.html /noVNC
 COPY image-files/tws.png /noVNC
 
 # Download and setup IBC
-RUN wget2 https://github.com/IbcAlpha/IBC/releases/download/3.21.0/IBCLinux-3.21.0.zip -O ibc.zip \
+RUN wget2 https://github.com/IbcAlpha/IBC/releases/download/3.23.0/IBCLinux-3.23.0.zip -O ibc.zip \
     && unzip ibc.zip -d /opt/ibc \
     && rm ibc.zip
 

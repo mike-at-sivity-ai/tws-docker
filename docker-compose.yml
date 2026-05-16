@@ -1,8 +1,7 @@
-version: '3.4'
 services:
   tws:
-    image: registry.upshon.net/tws
-    #build: .
+    #image: registry.upshon.net/tws
+    build: .
     container_name: tws
     restart: unless-stopped
     ports:
