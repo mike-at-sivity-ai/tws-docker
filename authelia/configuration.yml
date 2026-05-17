@@ -1,0 +1,43 @@
+server:
+  address: tcp://0.0.0.0:9091/authelia
+
+log:
+  level: info
+
+totp:
+  issuer: tws
+  algorithm: SHA1
+  digits: 6
+  period: 30
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+    password:
+      algorithm: argon2id
+      iterations: 1
+      salt_length: 16
+      parallelism: 8
+      memory: 64
+
+access_control:
+  default_policy: two_factor
+
+session:
+  name: authelia_session
+  expiration: 8h
+  inactivity: 1h
+  domain: tws.upshon.net
+
+regulation:
+  max_retries: 5
+  find_time: 2m
+  ban_time: 10m
+
+storage:
+  local:
+    path: /data/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /data/notification.txt

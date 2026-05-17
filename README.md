@@ -8,28 +8,38 @@
 IB_ACCOUNT=<your IB username>
 # wrap password in single quotes if $, /, or \ are present
 IB_PASSWORD='<your IB password>'
+AUTHELIA_DOMAIN=tws.upshon.net
 ```
 
-### 2. Generate the nginx credentials file
+### 2. Generate Authelia secrets and password hash
 
-The web interface is protected by HTTP Basic Auth. Create the `nginx/.htpasswd` file before starting the stack. Run this once and enter your chosen password when prompted:
+Create the secrets directory and generate random keys:
 
 ```bash
-mkdir -p nginx
-htpasswd -Bc nginx/.htpasswd <username>
+mkdir -p authelia/secrets
+tr -dc 'A-Za-z0-9!@#%^&*' </dev/urandom | head -c 64 > authelia/secrets/jwt_secret
+tr -dc 'A-Za-z0-9!@#%^&*' </dev/urandom | head -c 64 > authelia/secrets/session_secret
+tr -dc 'A-Za-z0-9!@#%^&*' </dev/urandom | head -c 64 > authelia/secrets/storage_encryption_key
+chmod 600 authelia/secrets/*
 ```
 
-If `htpasswd` is not installed locally, use Docker instead:
+Generate an argon2id password hash for your chosen login password:
 
 ```bash
-mkdir -p nginx
-docker run --rm httpd:alpine htpasswd -Bn <username> > nginx/.htpasswd
+docker run --rm authelia/authelia:latest \
+  authelia crypto hash generate argon2 --password 'your-password-here'
 ```
 
-The `-B` flag uses bcrypt hashing. You can add multiple users by re-running without the `-c` flag:
+Copy the output hash into `authelia/users_database.yml`:
 
-```bash
-htpasswd -B nginx/.htpasswd <second-username>
+```yaml
+users:
+  mike:
+    displayname: "Mike"
+    password: "$argon2id$v=19$..."   # paste hash here
+    email: mike@localhost
+    groups:
+      - admins
 ```
 
 ### 3. Start the stack
@@ -38,7 +48,7 @@ htpasswd -B nginx/.htpasswd <second-username>
 docker compose up -d
 ```
 
-Access the TWS desktop at [http://localhost:6080](http://localhost:6080). You will be prompted for the username and password set in step 2.
+Access the TWS desktop at [https://tws.upshon.net](https://tws.upshon.net). You will be redirected to the Authelia login page. On first login, you will be prompted to register a TOTP device (Google Authenticator or Authy).
 
 TWS API is accessible at port `8888`.
 
@@ -47,66 +57,79 @@ TWS API is accessible at port `8888`.
 ## Architecture
 
 ```
-Browser → nginx (port 6080, HTTP Basic Auth) → noVNC (port 6081, internal) → Xvnc (port 5900)
+Browser → nginx-proxy-manager (TLS) → nginx (port 6080) → Authelia (auth check) → noVNC (port 6081, internal) → Xvnc (port 5900)
 ```
 
 | Service | Port | Access | Purpose |
 |---------|------|--------|---------|
-| nginx | 6080 | public | Reverse proxy with HTTP Basic Auth |
+| nginx | 6080 | public | Reverse proxy with Authelia forward-auth |
+| Authelia | 9091 | internal only | Authentication portal (password + TOTP) |
 | noVNC | 6081 | internal only | Web-based VNC client |
 | Xvnc | 5900 | internal only | VNC server |
 | TWS API | 8888 | public | Interactive Brokers API |
 
 ---
 
-## nginx Configuration
+## Authentication
 
-The nginx config is at `nginx/nginx.conf`. It proxies all traffic to the noVNC service and handles WebSocket upgrades required by noVNC.
+Access is protected by [Authelia](https://www.authelia.com/) with:
 
-Key settings:
+- **Password** — argon2id-hashed, stored in `authelia/users_database.yml`
+- **TOTP** — 6-digit time-based code via Google Authenticator or Authy
+- **Session expiry** — sessions expire after 8 hours, or 1 hour of inactivity
 
-```nginx
-auth_basic "TWS Access";
-auth_basic_user_file /etc/nginx/.htpasswd;
+### Registering a TOTP device
 
-proxy_pass http://tws:6081;
-proxy_http_version 1.1;
-proxy_set_header Upgrade $http_upgrade;
-proxy_set_header Connection "upgrade";
-proxy_read_timeout 3600s;
-```
-
-The `Upgrade` and `Connection` headers are required for the WebSocket connection that noVNC uses. The `proxy_read_timeout` is set to 1 hour to prevent idle VNC sessions from being dropped.
-
----
-
-## Managing Users
-
-**Add a user:**
-```bash
-htpasswd -B nginx/.htpasswd <username>
-```
-
-**Remove a user:**
-```bash
-htpasswd -D nginx/.htpasswd <username>
-```
-
-**List users:**
-```bash
-cut -d: -f1 nginx/.htpasswd
-```
-
-After changing users, reload nginx without restarting the full stack:
+Authelia registers TOTP devices via an identity verification link that it writes to a local file (no SMTP required). If you need to register a new TOTP device or re-register after losing access to your authenticator app, use the Authelia CLI directly — this bypasses the email step entirely:
 
 ```bash
-docker exec tws-nginx nginx -s reload
+ENCRYPTION_KEY=$(sudo cat authelia/secrets/storage_encryption_key)
+docker exec tws-authelia authelia storage user totp generate mike \
+  --sqlite.path /data/db.sqlite3 \
+  --encryption-key "$ENCRYPTION_KEY"
 ```
+
+This outputs an `otpauth://` URI. To view it as a scannable QR code in the terminal:
+
+```bash
+ENCRYPTION_KEY=$(sudo cat authelia/secrets/storage_encryption_key)
+docker exec tws-authelia authelia storage user totp generate mike \
+  --sqlite.path /data/db.sqlite3 \
+  --encryption-key "$ENCRYPTION_KEY" | \
+  grep -o 'otpauth://[^ ]*' | xargs qrencode -t UTF8
+```
+
+Scan the QR code with your authenticator app. The secret is stored immediately in the database — no further steps needed.
+
+### Reading the notification file
+
+When Authelia sends a notification (password reset link, device registration link), it writes to a local file instead of sending email. Read it with:
+
+```bash
+# From the host
+sudo cat /var/lib/docker/volumes/tws-docker_authelia_data/_data/notification.txt
+
+# Or from inside the container
+docker exec tws-authelia cat /data/notification.txt
+```
+
+The file always contains the most recent notification. Copy the link from the file and open it in your browser to complete the flow.
+
+### Changing your password
+
+Update the hash in `authelia/users_database.yml`:
+
+```bash
+docker run --rm authelia/authelia:latest \
+  authelia crypto hash generate argon2 --password 'new-password'
+```
+
+Paste the output into `authelia/users_database.yml`. Authelia hot-reloads this file — no restart needed.
 
 ---
 
 ## Notes
 
-- `nginx/.htpasswd` is excluded from git — keep a backup of it somewhere safe.
-- If you access TWS remotely, put nginx behind a TLS-terminating reverse proxy (e.g. nginx-proxy-manager) to encrypt credentials in transit.
+- `authelia/users_database.yml` and `authelia/secrets/` are excluded from git — keep backups somewhere safe.
+- nginx receives HTTP from the TLS-terminating upstream proxy. It trusts the `X-Forwarded-Proto: https` header from that proxy and passes it to Authelia. Do not expose port 6080 directly to the internet without TLS in front.
 - Port 8888 (TWS API) has no authentication — bind it to localhost only (`127.0.0.1:8888:8888`) if API clients are on the same machine.

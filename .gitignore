@@ -1,3 +1,6 @@
 .env
 nginx/.htpasswd
 nginx/certs/
+authelia/secrets/
+authelia/users_database.yml
+authelia/data/
