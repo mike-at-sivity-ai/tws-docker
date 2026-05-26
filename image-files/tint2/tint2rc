@@ -1,0 +1,92 @@
+# tint2 config for TWS Docker
+# panel_items: T=taskbar, C=clock (right side)
+
+#---------------------------------------------
+# PANEL
+#---------------------------------------------
+panel_items = TC
+panel_size = 100% 30
+panel_margin = 0 0
+panel_padding = 2 0 2
+panel_background_id = 1
+wm_menu = 0
+panel_dock = 0
+panel_position = bottom center horizontal
+panel_layer = top
+panel_monitor = all
+primary_monitor_first = 1
+
+# Autohide
+autohide = 1
+autohide_show_timeout = 0.3
+autohide_hide_timeout = 1.5
+autohide_height = 2
+
+#---------------------------------------------
+# TASKBAR
+#---------------------------------------------
+taskbar_mode = single_desktop
+taskbar_padding = 0 3 2
+taskbar_background_id = 0
+taskbar_active_background_id = 0
+taskbar_name = 0
+taskbar_hide_inactive_tasks = 0
+taskbar_hide_different_monitor = 0
+taskbar_sort_order = none
+task_align = left
+
+#---------------------------------------------
+# TASKS
+#---------------------------------------------
+task_text = 1
+task_icon = 1
+task_icon_size_adjust = 0
+task_centered = 1
+task_maximum_size = 200 35
+task_padding = 6 2
+task_font = sans 9
+task_font_shadow = 0
+task_background_id = 2
+task_active_background_id = 3
+task_urgent_background_id = 4
+task_iconified_background_id = 2
+urgent_nb_of_blink = 8
+
+#---------------------------------------------
+# CLOCK
+#---------------------------------------------
+time1_format = %H:%M
+time2_format = %a %d %b %Y
+time1_font = sans bold 10
+time2_font = sans 8
+clock_font_color = #ffffff 100
+clock_padding = 8 0
+clock_background_id = 0
+clock_tooltip = %A %d %B %Y
+
+#---------------------------------------------
+# BACKGROUNDS
+#---------------------------------------------
+# id 1 — panel background
+rounded = 0
+border_width = 0
+background_color = #1a1a1a 90
+border_color = #000000 0
+
+# id 2 — inactive task
+rounded = 3
+border_width = 1
+background_color = #333333 80
+border_color = #555555 50
+
+# id 3 — active task
+rounded = 3
+border_width = 1
+background_color = #4a90d9 90
+border_color = #6aaaf9 70
+
+# id 4 — urgent task
+rounded = 3
+border_width = 1
+background_color = #d9534a 90
+border_color = #f97070 70

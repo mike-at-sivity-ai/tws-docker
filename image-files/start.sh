@@ -20,6 +20,9 @@ until [ -e /tmp/.X11-unix/X0 ]; do sleep 0.1; done
 # Start openbox
 openbox &
 
+# Start tint2 taskbar (fallback — also launched via openbox autostart)
+tint2 &
+
 if [[ ${IBC_TradingMode:-live} = "live" ]]; then
     # TWS Live
     port=7496
