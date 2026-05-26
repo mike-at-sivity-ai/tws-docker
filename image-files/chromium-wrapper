@@ -1,2 +1,10 @@
 #!/bin/bash
-exec /usr/bin/chromium --no-sandbox --test-type "$@"
+exec /usr/bin/chromium \
+    --no-sandbox \
+    --test-type \
+    --disable-dev-shm-usage \
+    --disable-gpu \
+    --disable-software-rasterizer \
+    --force-dark-mode \
+    --enable-features=WebContentsForceDark \
+    "$@"
