@@ -6,7 +6,7 @@ ENV TZ=US/Eastern
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt install --no-install-recommends -y \
-    ca-certificates chromium git libxtst6 libgtk-3-0 nano openbox procps python3 socat tigervnc-standalone-server tint2 tzdata unzip wget2 wmctrl xdotool xterm
+    ca-certificates chromium git libxtst6 libgtk-3-0 nano openbox procps python3 socat tigervnc-standalone-server tint2 tzdata unzip wget2 wmctrl xdg-utils xdotool xterm
 
 # Setup noVNC for browser VNC access
 RUN git clone --depth 1 https://github.com/novnc/noVNC.git && \
@@ -58,6 +58,10 @@ RUN chmod +x /usr/local/bin/chromium && \
 # Managed policy: disable bookmarks bar (overrides user prefs, survives profile resets)
 RUN mkdir -p /etc/chromium/policies/managed
 COPY image-files/chromium/policy.json /etc/chromium/policies/managed/policy.json
+
+# Register wrapper as default browser for xdg-open (used by TWS to open URLs)
+COPY image-files/chromium/chromium-wrapper.desktop /usr/share/applications/chromium-wrapper.desktop
+RUN xdg-mime default chromium-wrapper.desktop x-scheme-handler/http x-scheme-handler/https
 
 RUN chmod a+x *.sh /opt/ibc/*.sh /opt/ibc/scripts/*.sh
 
