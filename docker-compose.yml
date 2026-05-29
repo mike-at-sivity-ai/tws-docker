@@ -51,6 +51,26 @@ services:
     depends_on:
       - tws
       - authelia
+      - api
+
+  api:
+    build: ./api
+    container_name: tws-api
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      TWS_HOST: tws
+      TWS_PORT: "8888"
+      TWS_CLIENT_ID: "10"
+      TWS_TIMEOUT: "10"
+      API_KEY: ${API_KEY}
+      AUTHELIA_INTERNAL_URL: http://authelia:9091
+    depends_on:
+      - tws
+      - authelia
+    networks:
+      - tws_internal
 
 networks:
   tws_internal:
