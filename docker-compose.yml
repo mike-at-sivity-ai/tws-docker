@@ -14,6 +14,9 @@ services:
       IB_USERNAME: ${IB_ACCOUNT}
       IB_PASSWORD: ${IB_PASSWORD}
       TZ: America/Chicago
+    volumes:
+      - ./jts/jts.ini:/root/Jts/jts.ini
+      - ./jts/tws.xml:/root/tws-config/tws.xml
     tty: true
     stdin_open: true
     networks:

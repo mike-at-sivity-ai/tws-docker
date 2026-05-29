@@ -41,4 +41,12 @@ TWS_MAJOR_VERSION=$(ls ~/Jts/ibgateway/.)
 sed -i -e "s|IbLoginId=edemo|IbLoginId=$IB_USERNAME|g" ~/config.ini
 sed -i -e "s|IbPassword=demouser|IbPassword=$IB_PASSWORD|g" ~/config.ini
 
+USER_DIR=$(python3 -c "
+import hashlib, sys
+h = hashlib.sha1(sys.argv[1].encode()).hexdigest()
+print(''.join(chr(ord('a') + int(c, 16)) for c in h))
+" "$IB_USERNAME")
+mkdir -p "/root/Jts/$USER_DIR"
+cp /root/tws-config/tws.xml "/root/Jts/$USER_DIR/tws.xml"
+
 exec /opt/ibc/scripts/ibcstart.sh "${TWS_MAJOR_VERSION}" "--ibc-ini=/root/config.ini" "--on2fatimeout=restart"
